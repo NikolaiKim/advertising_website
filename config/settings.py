@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'djoser',
 
     'user',
+    'advert',
+    'feedback',
 ]
 
 MIDDLEWARE = [
