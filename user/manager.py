@@ -1,7 +1,9 @@
 from django.contrib.auth.models import BaseUserManager
 
 
-# Кастомный менеджер объектов пользователя, с помощью которой мы переопределяем стандартное создание пользователя
+# Кастомный менеджер объектов пользователя,
+# с помощью которой мы переопределяем
+# стандартное создание пользователя
 class UserManager(BaseUserManager):
     """
     функция создания пользователя — в нее мы передаем обязательные поля
@@ -22,10 +24,16 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, first_name, last_name, phone, role, password=None):
+    def create_superuser(
+            self, email, first_name,
+            last_name, phone, role, password=None
+    ):
         """
-        функция для создания суперпользователя — с ее помощью мы создаем админинстратора
-        это можно сделать с помощью команды createsuperuser
+        функция для создания
+        суперпользователя — с ее помощью мы создаем
+        админинстратора
+        это можно сделать с помощью
+        команды createsuperuser
         """
 
         user = self.create_user(

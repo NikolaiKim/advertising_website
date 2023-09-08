@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from djoser.conf import django_settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView, TokenRefreshView)
 
 from user.serializers import CustomTokenRefreshSerializer
 
@@ -32,11 +33,17 @@ def reset_user_password(request, uid, token):
         payload = {'uid': uid, 'token': token, 'new_password': password}
 
         url = '{0}://{1}{2}'.format(
-            django_settings.PROTOCOL, django_settings.DOMAIN, reverse('password_reset_confirm'))
+            django_settings.PROTOCOL,
+            django_settings.DOMAIN,
+            reverse('password_reset_confirm')
+        )
 
         response = requests.post(url, data=payload)
         if response.status_code == 204:
-            messages.success(request, 'Your password has been reset successfully!')
+            messages.success(
+                request,
+                'Your password has been reset successfully!'
+            )
             return redirect('home')
         else:
             return Response(response.json())
@@ -50,7 +57,8 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 
 class AccessToken(TokenObtainPairSerializer):
-    """Отображение для кастомного урла аксесс токена, возвращает только аксесс токен"""
+    """Отображение для кастомного
+     урла аксесс токена, возвращает только аксесс токен"""
 
     def validate(self, attrs):
         data = super().validate(attrs)

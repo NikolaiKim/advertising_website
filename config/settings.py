@@ -101,16 +101,21 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.'
+            'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -158,7 +163,8 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     "SEND_ACTIVATION_EMAIL": True,
     "ACTIVATION_URL": "api/auth/users/activate/{uid}/{token}",
-    "PASSWORD_RESET_CONFIRM_URL": "api/api/users/reset_password_confirm/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL":
+        "api/api/users/reset_password_confirm/{uid}/{token}",
     'SERIALIZERS': {
         'user_create': 'user.serializers.UserRegistrationSerializer',
         'token_create': 'user.serializers.CustomTokenCreateSerializer',

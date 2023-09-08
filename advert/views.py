@@ -21,8 +21,9 @@ class AdvertAPIView(APIView):
     filterset_class = AdvertFilter
 
     def get_permissions(self):
-        """Ограничение для метода гет, которое разрешает всем просматривать список объявлений. В остальных случаях
-        нужна аутентификация
+        """Ограничение для метода гет,
+        которое разрешает всем просматривать список объявлений.
+        В остальных случаяхнужна аутентификация
         """
         method = self.request.method
         if method == 'GET':
@@ -31,8 +32,10 @@ class AdvertAPIView(APIView):
             return [IsAuthenticated()]
 
     def get(self, request):
-        """Метод get, который отдает список объявлений постранично 4 шт. на страницу по дате создания
-        от позднего к раннему"""
+        """Метод get,
+        который отдает список объявлений постранично
+        4 шт. на страницу
+        по дате создания от позднего к раннему"""
         adverts = Advert.objects.all().values().order_by('-created_at')
         paginator = PageNumberPagination()
         paginator.page_size = 4
@@ -41,7 +44,8 @@ class AdvertAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
-        """Метод post, который дает пользователю добавить новое объявление"""
+        """Метод post, который
+        дает пользователю добавить новое объявление"""
         serializer = AdvertSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(author=self.request.user)
@@ -50,17 +54,22 @@ class AdvertAPIView(APIView):
 
 
 class UserAdvertListAPIView(generics.ListAPIView):
-    """Представление для получения списка объявлений пользователя"""
+    """Представление для
+    получения списка объявлений пользователя"""
     serializer_class = AdvertSerializer
     pagination_class = AdvertPaginator
 
     def get_queryset(self):
-        """Функция получения объектов объявлений пользователя"""
-        return Advert.objects.filter(author=self.request.user).order_by('-created_at')
+        """Функция получения
+        объектов объявлений пользователя"""
+        return Advert.objects.filter(
+            author=self.request.user
+        ).order_by('-created_at')
 
 
 class AdvertRetrieveAPI(APIView):
-    """Представление для работы с выбранным объявлением, которое может иметь проверку ограничения объекта на создателя,
+    """Представление для работы с выбранным объявлением,
+    которое может иметь проверку ограничения объекта на создателя,
     либо админа
     """
     serializer_class = AdvertSerializer
@@ -74,14 +83,15 @@ class AdvertRetrieveAPI(APIView):
         return JsonResponse(serializer.data)
 
     def patch(self, request, *args, **kwargs):
-        """Редактирование объявления с проверкой ограничения на создателя или админа"""
+        """Редактирование объявления с проверкой
+        ограничения на создателя или админа"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method PUT not allowed"})
 
         try:
             instance = Advert.objects.get(pk=pk)
-        except:
+        except Exception:
             return Response({"error": "Object does not exists"})
 
         serializer = AdvertSerializer(data=request.data, instance=instance)
@@ -92,7 +102,8 @@ class AdvertRetrieveAPI(APIView):
         return Response({"post": serializer.data})
 
     def delete(self, request, *args, **kwargs):
-        """Удаление объявления с проверкой ограничения на создателя или админа"""
+        """Удаление объявления с проверкой
+        ограничения на создателя или админа"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method DELETE not allowed"})

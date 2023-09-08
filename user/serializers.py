@@ -1,7 +1,8 @@
 from djoser.conf import settings
-from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer, TokenCreateSerializer
+from djoser.serializers import (
+    UserCreateSerializer as BaseUserRegistrationSerializer,
+    TokenCreateSerializer)
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
-from rest_framework_simplejwt.state import token_backend
 
 from user.models import User
 
@@ -9,7 +10,11 @@ from user.models import User
 # Сериализатор для регистрации пользователя
 class UserRegistrationSerializer(BaseUserRegistrationSerializer):
     class Meta(BaseUserRegistrationSerializer.Meta):
-        fields = ('email', 'first_name', 'last_name', 'phone', 'image', 'password')
+        fields = (
+            'email', 'first_name',
+            'last_name', 'phone',
+            'image', 'password'
+        )
 
 
 # Сериализатор для создания токена
@@ -32,7 +37,5 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         data = super(CustomTokenRefreshSerializer, self).validate(attrs)
-        decoded_payload = token_backend.decode(data['access'], verify=True)
-        user_uid = decoded_payload['user_id']
         data.update({'custom_field': 'custom_data'})
         return data

@@ -15,7 +15,9 @@ class UserRoles(models.TextChoices):
 
 
 class User(AbstractBaseUser):
-    """Класс кастомного пользователя в котором переопределяем параметры для корректной работы djoser
+    """Класс кастомного пользователя
+    в котором переопределяем параметры
+    для корректной работы djoser
     и убираем username, меняя авторизацию на email"""
 
     @property
@@ -35,10 +37,23 @@ class User(AbstractBaseUser):
     username = None
     first_name = models.CharField(max_length=35, verbose_name='имя')
     last_name = models.CharField(max_length=35, verbose_name='фамилия')
-    phone = models.CharField(unique=True, max_length=35, verbose_name='телефон')
+    phone = models.CharField(
+        unique=True,
+        max_length=35,
+        verbose_name='телефон'
+    )
     email = models.EmailField(unique=True, verbose_name='почта')
-    image = models.ImageField(upload_to='users/', verbose_name='аватар', **NULLABLE)
-    role = models.CharField(max_length=9, choices=UserRoles.choices, default=UserRoles.USER, **NULLABLE)
+    image = models.ImageField(
+        upload_to='users/',
+        verbose_name='аватар',
+        **NULLABLE
+    )
+    role = models.CharField(
+        max_length=9,
+        choices=UserRoles.choices,
+        default=UserRoles.USER,
+        **NULLABLE
+    )
     is_active = models.BooleanField(verbose_name='активный', default=False)
 
     USERNAME_FIELD = 'email'

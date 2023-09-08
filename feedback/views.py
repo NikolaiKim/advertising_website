@@ -20,9 +20,12 @@ class FeedbackAPIView(APIView):
         return [IsAuthenticated()]
 
     def get(self, request, advert_id):
-        """Метод get, который возвращает список отзывов к объявлению по дате создания от позднего к раннему
+        """Метод get, который возвращает список отзывов
+        к объявлению по дате создания от позднего к раннему
         с пагинацией по 5 штук на страницу"""
-        feedback = Feedback.objects.filter(advert_id=advert_id).values().order_by('-created_at')
+        feedback = Feedback.objects.filter(
+            advert_id=advert_id
+        ).values().order_by('-created_at')
         paginator = PageNumberPagination()
         paginator.page_size = 5
         result_page = paginator.paginate_queryset(feedback, request)
@@ -30,11 +33,15 @@ class FeedbackAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request, advert_id):
-        """Метод post, который позволяет авторизованному пользователю добавить отзыв"""
+        """Метод post, который
+        позволяет авторизованному пользователю добавить отзыв"""
         serializer = FeedbackSerializer(data=request.data)
         print(request.data)
         if serializer.is_valid():
-            serializer.save(user=self.request.user, advert=Advert.objects.get(pk=advert_id))
+            serializer.save(
+                user=self.request.user,
+                advert=Advert.objects.get(pk=advert_id)
+            )
             return Response({'post': serializer.data})
         return JsonResponse(serializer.errors, status=400)
 
@@ -53,14 +60,16 @@ class FeedbackRetrieveAPIView(APIView):
         return JsonResponse(serializer.data)
 
     def patch(self, request, *args, **kwargs):
-        """Метод patch, который позволяет пользователю или администратору отредактировать отзыв"""
+        """Метод patch,
+        который позволяет пользователю или администратору
+        отредактировать отзыв"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method PUT not allowed"})
 
         try:
             instance = Feedback.objects.get(pk=pk)
-        except:
+        except Exception:
             return Response({"error": "Object does not exists"})
 
         serializer = FeedbackSerializer(data=request.data, instance=instance)
@@ -71,7 +80,9 @@ class FeedbackRetrieveAPIView(APIView):
         return Response({"post": serializer.data})
 
     def delete(self, request, *args, **kwargs):
-        """Метод delete, который позволяет пользователю или администратору удалить отзыв"""
+        """Метод delete,
+        который позволяет пользователю или администратору
+        удалить отзыв"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method DELETE not allowed"})
