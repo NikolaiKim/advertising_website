@@ -36,6 +36,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+# Основной файл урлов, который разделяется по урлам приложений и имеет урлы документации
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('user.urls', namespace='user')),
@@ -45,4 +46,5 @@ urlpatterns = [
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
+# Cсылки на файлы с картинками
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

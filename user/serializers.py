@@ -6,11 +6,13 @@ from rest_framework_simplejwt.state import token_backend
 from user.models import User
 
 
+# Сериализатор для регистрации пользователя
 class UserRegistrationSerializer(BaseUserRegistrationSerializer):
     class Meta(BaseUserRegistrationSerializer.Meta):
         fields = ('email', 'first_name', 'last_name', 'phone', 'image', 'password')
 
 
+# Сериализатор для создания токена
 class CustomTokenCreateSerializer(TokenCreateSerializer):
 
     def validate(self, attrs):
@@ -26,11 +28,11 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         self.fail("invalid_credentials")
 
 
+# Сериализатор для получения refresh токена
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         data = super(CustomTokenRefreshSerializer, self).validate(attrs)
         decoded_payload = token_backend.decode(data['access'], verify=True)
         user_uid = decoded_payload['user_id']
-        # add filter query
         data.update({'custom_field': 'custom_data'})
         return data

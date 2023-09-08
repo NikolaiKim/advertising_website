@@ -1,20 +1,27 @@
 from django.http import JsonResponse
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from advert.models import Advert
 from feedback.models import Feedback
+from feedback.permissions import IsAdminOrOwnerFeedback
 from feedback.serializers import FeedbackSerializer
 
 
-# Create your views here.
+# Представления для отзывов.
 class FeedbackAPIView(APIView):
+    """Представление для списка отзывов"""
     serializer_class = FeedbackSerializer
 
-    # permission_classes = [IsUser | IsModerator]
+    def get_permissions(self):
+        """Ограничение на пользователей прошедших аутентификацию"""
+        return [IsAuthenticated()]
 
     def get(self, request, advert_id):
+        """Метод get, который возвращает список отзывов к объявлению по дате создания от позднего к раннему
+        с пагинацией по 5 штук на страницу"""
         feedback = Feedback.objects.filter(advert_id=advert_id).values().order_by('-created_at')
         paginator = PageNumberPagination()
         paginator.page_size = 5
@@ -23,6 +30,7 @@ class FeedbackAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request, advert_id):
+        """Метод post, который позволяет авторизованному пользователю добавить отзыв"""
         serializer = FeedbackSerializer(data=request.data)
         print(request.data)
         if serializer.is_valid():
@@ -32,17 +40,20 @@ class FeedbackAPIView(APIView):
 
 
 class FeedbackRetrieveAPIView(APIView):
+    """Представление для отзыва с ограничением на админа или создателя"""
     serializer_class = FeedbackSerializer
     queryset = Feedback.objects.all()
-
-    # permission_classes = [IsUser | IsModerator]
+    permission_classes = (IsAdminOrOwnerFeedback,)
 
     def get(self, request, advert_id, pk):
+        """Метод get, который возвращает отзыв по pk"""
         feedback = Feedback.objects.filter(advert_id=advert_id).get(pk=pk)
+        self.check_object_permissions(request, obj=feedback)
         serializer = FeedbackSerializer(feedback)
         return JsonResponse(serializer.data)
 
     def patch(self, request, *args, **kwargs):
+        """Метод patch, который позволяет пользователю или администратору отредактировать отзыв"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method PUT not allowed"})
@@ -53,14 +64,18 @@ class FeedbackRetrieveAPIView(APIView):
             return Response({"error": "Object does not exists"})
 
         serializer = FeedbackSerializer(data=request.data, instance=instance)
+        self.check_object_permissions(request, obj=instance)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response({"post": serializer.data})
 
     def delete(self, request, *args, **kwargs):
+        """Метод delete, который позволяет пользователю или администратору удалить отзыв"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "Method DELETE not allowed"})
-        Feedback.objects.filter(pk=pk).delete()
+        feedback = Feedback.objects.get(pk=pk)
+        self.check_object_permissions(request, obj=feedback)
+        feedback.delete()
         return Response({"post": "delete post " + str(pk)})

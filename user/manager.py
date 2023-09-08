@@ -1,8 +1,7 @@
-# Менеджер должен быть унаследован от следующего класса
 from django.contrib.auth.models import BaseUserManager
 
 
-# Менеджер должен содержать как минимум две следующие функции
+# Кастомный менеджер объектов пользователя, с помощью которой мы переопределяем стандартное создание пользователя
 class UserManager(BaseUserManager):
     """
     функция создания пользователя — в нее мы передаем обязательные поля
@@ -16,7 +15,6 @@ class UserManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            role="user"
         )
         user.is_active = True
         user.set_password(password)
@@ -24,7 +22,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, first_name, last_name, phone, password=None):
+    def create_superuser(self, email, first_name, last_name, phone, role, password=None):
         """
         функция для создания суперпользователя — с ее помощью мы создаем админинстратора
         это можно сделать с помощью команды createsuperuser
@@ -36,8 +34,8 @@ class UserManager(BaseUserManager):
             last_name=last_name,
             phone=phone,
             password=password,
-            role="admin"
         )
-
+        user.is_active = True
+        user.role = 'admin'
         user.save(using=self._db)
         return user

@@ -6,6 +6,7 @@ from feedback.views import FeedbackAPIView, FeedbackRetrieveAPIView
 
 app_name = AdvertConfig.name
 
+# урлы для всех представлений объявлений и отзывов
 urlpatterns = [
     path("api/ads/", AdvertAPIView.as_view(), name='adverts'),
     path("api/ads/me/", UserAdvertListAPIView.as_view(), name='user_adverts_list'),

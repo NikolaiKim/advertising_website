@@ -4,7 +4,7 @@ from advert.models import Advert
 from user.models import User
 
 
-# Create your models here.
+# Модель для отзыва с полями по тз.
 class Feedback(models.Model):
     text = models.CharField(max_length=255, verbose_name='текст отзыва')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='пользователь')

@@ -157,7 +157,7 @@ AUTH_USER_MODEL = 'user.User'
 DJOSER = {
     'LOGIN_FIELD': 'email',
     "SEND_ACTIVATION_EMAIL": True,
-    "ACTIVATION_URL": "activate/{uid}/{token}",
+    "ACTIVATION_URL": "api/auth/users/activate/{uid}/{token}",
     "PASSWORD_RESET_CONFIRM_URL": "api/api/users/reset_password_confirm/{uid}/{token}",
     'SERIALIZERS': {
         'user_create': 'user.serializers.UserRegistrationSerializer',
@@ -179,7 +179,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ['Bearer', 'JWT',],
+    'AUTH_HEADER_TYPES': ['Bearer', 'JWT', ],
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -3,7 +3,7 @@ from django.db import models
 from user.models import User, NULLABLE
 
 
-# Create your models here.
+# Модель объявления с полями по тз
 class Advert(models.Model):
     title = models.CharField(max_length=255, verbose_name='название')
     price = models.IntegerField(verbose_name='цена')
