@@ -3,7 +3,7 @@ from djoser.views import UserViewSet
 from rest_framework.routers import SimpleRouter
 
 from user.apps import UserConfig
-from user.views import ActivateUserEmail
+from user.views import ActivateUserEmail, AccessTokenView, CustomTokenRefreshView
 
 app_name = UserConfig.name
 
@@ -14,9 +14,11 @@ users_router = SimpleRouter()
 users_router.register("users", UserViewSet, basename="users")
 
 urlpatterns = [
-    path("", include(users_router.urls)),
+    path("api/", include(users_router.urls)),
 
     re_path(r'^auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    re_path(r'^auth/', include('djoser.urls.jwt')),
     path('activate/<str:uid>/<str:token>/', ActivateUserEmail.as_view(), name='activate email'),
+    path('api/refresh/', CustomTokenRefreshView.as_view(), name='refresh_token'),
+    path('api/token/', AccessTokenView.as_view(), name='access_token'),
 ]

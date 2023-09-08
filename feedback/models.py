@@ -1,13 +1,14 @@
 from django.db import models
 
+from advert.models import Advert
 from user.models import User
 
 
 # Create your models here.
 class Feedback(models.Model):
     text = models.CharField(max_length=255, verbose_name='текст отзыва')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='автор')
-    advert = models.ForeignKey(User, on_delete=models.CASCADE, related_name='автор')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='пользователь')
+    advert = models.ForeignKey(Advert, on_delete=models.CASCADE, related_name='объявление')
     created_at = models.DateTimeField(verbose_name='дата и время создания', auto_now_add=True)
 
     def __str__(self):

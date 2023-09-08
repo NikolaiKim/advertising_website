@@ -41,10 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'drf_yasg',
     'corsheaders',
     'djoser',
+    'django_filters',
 
     'user',
     'advert',
@@ -157,6 +158,7 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     "SEND_ACTIVATION_EMAIL": True,
     "ACTIVATION_URL": "activate/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "api/api/users/reset_password_confirm/{uid}/{token}",
     'SERIALIZERS': {
         'user_create': 'user.serializers.UserRegistrationSerializer',
         'token_create': 'user.serializers.CustomTokenCreateSerializer',
@@ -172,10 +174,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ['Bearer', 'JWT',],
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
