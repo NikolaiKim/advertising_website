@@ -5,6 +5,10 @@ from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from djoser.conf import django_settings
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from user.serializers import CustomTokenRefreshSerializer
 
 
 class ActivateUserEmail(APIView):
@@ -34,3 +38,24 @@ def reset_user_password(request, uid, token):
             return Response(response.json())
     else:
         return render(request, 'templates/reset_password.html')
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    """
+    Custom Refresh token View
+    """
+    serializer_class = CustomTokenRefreshSerializer
+
+
+class AccessToken(TokenObtainPairSerializer):
+
+    def validate(self, attrs):
+        ## This data variable will contain refresh and access tokens
+        data = super().validate(attrs)
+        ## You can add more User model's attributes like username,email etc. in the data dictionary like this.
+        data['user_name'] = self.user.username
+        return data['access']
+
+
+class AccessTokenView(TokenObtainPairView):
+    serializer_class = AccessToken

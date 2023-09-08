@@ -1,7 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+from rest_framework.authtoken.models import Token
 
-from user.base_user import UserManager
+from user.manager import UserManager
 
 NULLABLE = {'blank': True, 'null': True}
 
@@ -47,3 +48,8 @@ class User(AbstractBaseUser):
     @property
     def is_user(self):
         return self.role == UserRoles.USER
+
+    def get_my_token(self):
+        return Token.objects.get(user=self)
+
+    my_token = property(get_my_token)
