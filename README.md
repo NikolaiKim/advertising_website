@@ -22,6 +22,7 @@
 - djoser
 - django-filter
 - rest-framework-simplejwt
+- flake8
 
 ### Начало работы:
 - Сделать fork этого проекта к себе в репозиторий
