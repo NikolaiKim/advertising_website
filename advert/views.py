@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from advert.filters import AdvertFilter
+from advert import filters
 from advert.models import Advert
 from advert.paginators import AdvertPaginator
 from advert.permissions import IsAdminOrOwner
@@ -17,8 +17,9 @@ from advert.serializers import AdvertSerializer
 class AdvertAPIView(APIView):
     """Представление для списка объявлений с фильтрацией"""
     serializer_class = AdvertSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = AdvertFilter
+    queryset = Advert.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.AdvertFilter]
+    search_fields = ["title", "description", ]
 
     def get_permissions(self):
         """Ограничение для метода гет,
@@ -36,7 +37,10 @@ class AdvertAPIView(APIView):
         который отдает список объявлений постранично
         4 шт. на страницу
         по дате создания от позднего к раннему"""
+        filterurl = self.request.query_params.get('search', None)
         adverts = Advert.objects.all().values().order_by('-created_at')
+        if filterurl is not None:
+            adverts = Advert.objects.filter(title__icontains=filterurl)
         paginator = PageNumberPagination()
         paginator.page_size = 4
         result_page = paginator.paginate_queryset(adverts, request)
