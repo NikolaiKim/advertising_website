@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.inspectors import SwaggerAutoSchema
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,6 +13,13 @@ from advert.models import Advert
 from advert.paginators import AdvertPaginator
 from advert.permissions import IsAdminOrOwner
 from advert.serializers import AdvertSerializer
+
+
+class OperationID(SwaggerAutoSchema):
+    def get_operation_id(self, operation_keys):
+        operation_id = super(OperationID, self).get_operation_id(operation_keys)
+        if operation_id == "api_ads_me_list":
+            return "Список объявлений пользователя"
 
 
 # Представления для объявлений
@@ -32,6 +41,7 @@ class AdvertAPIView(APIView):
         else:
             return [IsAuthenticated()]
 
+    @swagger_auto_schema(operation_id="Список объявлений")
     def get(self, request):
         """Метод get,
         который отдает список объявлений постранично
@@ -47,6 +57,7 @@ class AdvertAPIView(APIView):
         serializer = AdvertSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+    @swagger_auto_schema(operation_id="Добавить объявление")
     def post(self, request):
         """Метод post, который
         дает пользователю добавить новое объявление"""
@@ -62,6 +73,7 @@ class UserAdvertListAPIView(generics.ListAPIView):
     получения списка объявлений пользователя"""
     serializer_class = AdvertSerializer
     pagination_class = AdvertPaginator
+    swagger_schema = OperationID
 
     def get_queryset(self):
         """Функция получения
@@ -80,12 +92,14 @@ class AdvertRetrieveAPI(APIView):
     queryset = Advert.objects.all()
     permission_classes = (IsAdminOrOwner,)
 
+    @swagger_auto_schema(operation_id="Получить объявление по его id")
     def get(self, request, pk):
         """Получение объявления по его pk"""
         advert = Advert.objects.get(pk=pk)
         serializer = AdvertSerializer(advert)
         return JsonResponse(serializer.data)
 
+    @swagger_auto_schema(operation_id="Изменить объявление")
     def patch(self, request, *args, **kwargs):
         """Редактирование объявления с проверкой
         ограничения на создателя или админа"""
@@ -105,6 +119,7 @@ class AdvertRetrieveAPI(APIView):
 
         return Response({"post": serializer.data})
 
+    @swagger_auto_schema(operation_id="Удалить объявление")
     def delete(self, request, *args, **kwargs):
         """Удаление объявления с проверкой
         ограничения на создателя или админа"""

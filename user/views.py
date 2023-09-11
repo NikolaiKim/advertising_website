@@ -2,6 +2,8 @@ import requests
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from drf_yasg.inspectors import SwaggerAutoSchema
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from djoser.conf import django_settings
@@ -12,10 +14,20 @@ from rest_framework_simplejwt.views import (
 from user.serializers import CustomTokenRefreshSerializer
 
 
+# Класс для drf-yasg, который переименовывает operation_id
+class OperationID(SwaggerAutoSchema):
+    def get_operation_id(self, operation_keys):
+        operation_id = super(OperationID, self).get_operation_id(operation_keys)
+        if operation_id == "api_refresh_create":
+            return "Обновить токен"
+        return "Получить токен"
+
+
 # Отображение пользователя
 class ActivateUserEmail(APIView):
     """Отображение для отправки ссылки на активацию пользователя через email"""
 
+    @swagger_auto_schema(operation_id="Отправить сообщение на почту пользователя с ссылкой на активацию ")
     def get(self, request, uid, token):
         protocol = 'https://' if request.is_secure() else 'http://'
         web_url = protocol + request.get_host()
@@ -26,6 +38,7 @@ class ActivateUserEmail(APIView):
         return Response(message)
 
 
+@swagger_auto_schema(operation_id="Сбросить пароль пользователя")
 def reset_user_password(request, uid, token):
     """Отображение для сброса пароля"""
     if request.POST:
@@ -54,6 +67,7 @@ def reset_user_password(request, uid, token):
 class CustomTokenRefreshView(TokenRefreshView):
     """Отображение для кастомного урла рефреш токена"""
     serializer_class = CustomTokenRefreshSerializer
+    swagger_schema = OperationID
 
 
 class AccessToken(TokenObtainPairSerializer):
@@ -68,3 +82,4 @@ class AccessToken(TokenObtainPairSerializer):
 
 class AccessTokenView(TokenObtainPairView):
     serializer_class = AccessToken
+    swagger_schema = OperationID

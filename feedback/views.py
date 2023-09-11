@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,6 +20,7 @@ class FeedbackAPIView(APIView):
         """Ограничение на пользователей прошедших аутентификацию"""
         return [IsAuthenticated()]
 
+    @swagger_auto_schema(operation_id="Список всех отзывов для объявления")
     def get(self, request, advert_id):
         """Метод get, который возвращает список отзывов
         к объявлению по дате создания от позднего к раннему
@@ -32,6 +34,7 @@ class FeedbackAPIView(APIView):
         serializer = FeedbackSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+    @swagger_auto_schema(operation_id="Добавить отзыв к объявлению")
     def post(self, request, advert_id):
         """Метод post, который
         позволяет авторизованному пользователю добавить отзыв"""
@@ -52,6 +55,7 @@ class FeedbackRetrieveAPIView(APIView):
     queryset = Feedback.objects.all()
     permission_classes = (IsAdminOrOwnerFeedback,)
 
+    @swagger_auto_schema(operation_id="Получить отзыв к объявлению по id")
     def get(self, request, advert_id, pk):
         """Метод get, который возвращает отзыв по pk"""
         feedback = Feedback.objects.filter(advert_id=advert_id).get(pk=pk)
@@ -59,6 +63,7 @@ class FeedbackRetrieveAPIView(APIView):
         serializer = FeedbackSerializer(feedback)
         return JsonResponse(serializer.data)
 
+    @swagger_auto_schema(operation_id="Изменить коментарий")
     def patch(self, request, *args, **kwargs):
         """Метод patch,
         который позволяет пользователю или администратору
@@ -79,6 +84,7 @@ class FeedbackRetrieveAPIView(APIView):
 
         return Response({"post": serializer.data})
 
+    @swagger_auto_schema(operation_id="Удалить коментарий")
     def delete(self, request, *args, **kwargs):
         """Метод delete,
         который позволяет пользователю или администратору
