@@ -28,5 +28,6 @@
 - Сделать fork этого проекта к себе в репозиторий
 - В PyCharm через интерфейс открыть меню git, нажать clone, указать url вашего репозитория
 - Установить зависимости командой `pip install -r requirements.txt`
+- Провести миграции командой `python manage.py migrate`
 - Загрузить фикстуры через команду `python manage.py loaddata fixtures/{fixture_name}.json`
 - Запустить локальный сервер командой `python manage.py runserver`
